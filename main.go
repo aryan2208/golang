@@ -106,6 +106,27 @@ func GetUsersEndpoint(response http.ResponseWriter, request *http.Request) {
 func main() {
 	fmt.Println("Starting the application...")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	filter := bson.M{}
+    	var limit int64 = 10
+    	var page int64 = 1
+    	collection := client.Database("myaggregate").Collection("stocks")
+    	projection := bson.D{
+    		{"id", 10001},
+    		
+    	}
+
+        var products []Product
+    	paginatedData_posts, err := New(collection).Context(ctx).Limit(limit).Page(page).Sort("price", -1).Select(projection).Filter(filter).Decode(&posts).Find()
+	paginatedData_users, err := New(collection).Context(ctx).Limit(limit).Page(page).Sort("price", -1).Select(projection).Filter(filter).Decode(&users).Find()
+    	if err != nil {
+    		panic(err)
+    	}
+    
+    	
+    	fmt.Printf("Normal Find Data: %+v\n", posts)
+    
+    	
+    	fmt.Printf("Normal find pagination info: %+v\n", paginatedData.Pagination)
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, _ = mongo.Connect(ctx, clientOptions)
 	router := mux.NewRouter()
