@@ -1,4 +1,11 @@
 package main
+package greetings
+
+import (
+    "testing"
+    "regexp"
+)
+
 
 import (
 	"context"
@@ -103,6 +110,21 @@ func GetUsersEndpoint(response http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(response).Encode(users)
 }
 
+func TestHelloName(t *testing.T) {
+    name := "Gladys"
+    want := regexp.MustCompile(`\b`+name+`\b`)
+    msg, err := Hello("Gladys")
+    if !want.MatchString(msg) || err != nil {
+        t.Fatalf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
+    }
+}
+
+func TestHelloEmpty(t *testing.T) {
+    msg, err := Hello("")
+    if msg != "" || err == nil {
+        t.Fatalf(`Hello("") = %q, %v, want "", error`, msg, err)
+    }
+}
 func main() {
 	fmt.Println("Starting the application...")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
